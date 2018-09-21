@@ -20,7 +20,7 @@ import kotlin.coroutines.experimental.*
 @InternalCoroutinesApi // todo: Remove references from other docs
 public interface Delay {
     @Deprecated(level = DeprecationLevel.HIDDEN, message = "binary compat")
-    suspend fun delay(time: Long, unit: TimeUnit = TimeUnit.MILLISECONDS) = delay(unit.toMillis(time))
+    suspend fun delay(time: Long, unit: TimeUnit = TimeUnit.MILLISECONDS) = delay(time.convertToMillis(unit))
 
     /**
      * Delays coroutine for a given time without blocking a thread and resumes it after a specified time.
@@ -35,7 +35,7 @@ public interface Delay {
 
     @Deprecated(level = DeprecationLevel.HIDDEN, message = "binary compat")
     fun scheduleResumeAfterDelay(time: Long, unit: TimeUnit, continuation: CancellableContinuation<Unit>) =
-        scheduleResumeAfterDelay(unit.toMillis(time), continuation)
+        scheduleResumeAfterDelay(time.convertToMillis(unit), continuation)
 
     /**
      * Schedules resume of a specified [continuation] after a specified delay [timeMillis].
@@ -56,7 +56,7 @@ public interface Delay {
 
     @Deprecated(level = DeprecationLevel.HIDDEN, message = "binary compat")
     fun invokeOnTimeout(time: Long, unit: TimeUnit, block: Runnable): DisposableHandle =
-        DefaultDelay.invokeOnTimeout(unit.toMillis(time), block)
+        DefaultDelay.invokeOnTimeout(time.convertToMillis(unit), block)
 
     /**
      * Schedules invocation of a specified [block] after a specified delay [timeMillis].
@@ -115,7 +115,16 @@ public suspend fun delay(timeMillis: Long) {
     replaceWith = ReplaceWith("delay(unit.toMillis(time))")
 )
 public suspend fun delay(time: Long, unit: TimeUnit = TimeUnit.MILLISECONDS) =
-    delay(unit.toMillis(time))
+    delay(time.convertToMillis(unit))
+
+internal fun Long.convertToMillis(unit: TimeUnit): Long {
+    val result = unit.toMillis(this)
+    return when {
+        result != 0L -> result
+        this > 0 -> 1L
+        else -> 0L
+    }
+}
 
 /** Returns [Delay] implementation of the given context */
 internal val CoroutineContext.delay: Delay get() = get(ContinuationInterceptor) as? Delay ?: DefaultDelay

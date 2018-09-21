@@ -37,7 +37,7 @@ public suspend fun <T> withTimeout(time: Int, block: suspend CoroutineScope.() -
     replaceWith = ReplaceWith("withTimeout(unit.toMillis(time), block)")
 )
 public suspend fun <T> withTimeout(time: Long, unit: TimeUnit = TimeUnit.MILLISECONDS, block: suspend CoroutineScope.() -> T): T =
-    withTimeout(unit.toMillis(time), block)
+    withTimeout(time.convertToMillis(unit), block)
 
 @Deprecated(level = DeprecationLevel.HIDDEN, message = "binary compat")
 public suspend fun <T> withTimeoutOrNull(time: Int, block: suspend CoroutineScope.() -> T): T? =
@@ -68,5 +68,5 @@ public suspend fun <T> withTimeoutOrNull(time: Int, block: suspend CoroutineScop
     replaceWith = ReplaceWith("withTimeoutOrNull(unit.toMillis(time), block)")
 )
 public suspend fun <T> withTimeoutOrNull(time: Long, unit: TimeUnit = TimeUnit.MILLISECONDS, block: suspend CoroutineScope.() -> T): T? =
-    withTimeoutOrNull(unit.toMillis(time), block)
+    withTimeoutOrNull(time.convertToMillis(unit), block)
 

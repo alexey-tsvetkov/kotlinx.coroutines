@@ -57,7 +57,7 @@ public interface SelectBuilder<in R> {
         replaceWith = ReplaceWith("onTimeout(unit.toMillis(time), block)")
     )
     public fun onTimeout(time: Long, unit: TimeUnit = TimeUnit.MILLISECONDS, block: suspend () -> R) =
-        onTimeout(unit.toMillis(time), block)
+        onTimeout(time.convertToMillis(unit), block)
 }
 
 /**
