@@ -33,7 +33,7 @@ public fun CoroutineScope.rxCompletable(
 ): Completable = Completable.create { subscriber ->
     val newContext = newCoroutineContext(context)
     val coroutine = RxCompletableCoroutine(newContext, subscriber)
-    subscriber.setCancellable(coroutine)
+    subscriber.setCancellable(coroutine.cancellable)
     coroutine.start(CoroutineStart.DEFAULT, coroutine, block)
 }
 
@@ -52,7 +52,6 @@ public fun rxCompletable(
     block: suspend CoroutineScope.() -> Unit
 ): Completable = GlobalScope.rxCompletable(context + (parent ?: EmptyCoroutineContext), block)
 
-@Suppress("CONFLICTING_INHERITED_JVM_DECLARATIONS", "RETURN_TYPE_MISMATCH_ON_INHERITANCE")
 private class RxCompletableCoroutine(
     parentContext: CoroutineContext,
     private val subscriber: CompletableEmitter

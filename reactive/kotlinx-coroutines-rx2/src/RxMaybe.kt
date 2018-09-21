@@ -34,7 +34,7 @@ public fun <T> CoroutineScope.rxMaybe(
 ): Maybe<T> = Maybe.create { subscriber ->
     val newContext = newCoroutineContext(context)
     val coroutine = RxMaybeCoroutine(newContext, subscriber)
-    subscriber.setCancellable(coroutine)
+    subscriber.setCancellable(coroutine.cancellable)
     coroutine.start(CoroutineStart.DEFAULT, coroutine, block)
 }
 
@@ -53,7 +53,6 @@ public fun <T> rxMaybe(
     block: suspend CoroutineScope.() -> T?
 ): Maybe<T> = GlobalScope.rxMaybe(context + (parent ?: EmptyCoroutineContext), block)
 
-@Suppress("CONFLICTING_INHERITED_JVM_DECLARATIONS", "RETURN_TYPE_MISMATCH_ON_INHERITANCE")
 private class RxMaybeCoroutine<T>(
     parentContext: CoroutineContext,
     private val subscriber: MaybeEmitter<T>

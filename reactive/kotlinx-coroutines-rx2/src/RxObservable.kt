@@ -45,7 +45,7 @@ public fun <T> CoroutineScope.rxObservable(
 ): Observable<T> = Observable.create { subscriber ->
     val newContext = newCoroutineContext(context)
     val coroutine = RxObservableCoroutine(newContext, subscriber)
-    subscriber.setCancellable(coroutine) // do it first (before starting coroutine), to await unnecessary suspensions
+    subscriber.setCancellable(coroutine.cancellable) // do it first (before starting coroutine), to await unnecessary suspensions
     coroutine.start(CoroutineStart.DEFAULT, coroutine, block)
 }
 
@@ -68,7 +68,6 @@ private const val OPEN = 0        // open channel, still working
 private const val CLOSED = -1     // closed, but have not signalled onCompleted/onError yet
 private const val SIGNALLED = -2  // already signalled subscriber onCompleted/onError
 
-@Suppress("CONFLICTING_INHERITED_JVM_DECLARATIONS", "RETURN_TYPE_MISMATCH_ON_INHERITANCE")
 private class RxObservableCoroutine<T>(
     parentContext: CoroutineContext,
     private val subscriber: ObservableEmitter<T>
