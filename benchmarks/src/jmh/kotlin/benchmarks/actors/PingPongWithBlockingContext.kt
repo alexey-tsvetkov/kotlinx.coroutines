@@ -53,11 +53,11 @@ open class PingPongWithBlockingContext {
     }
 
     private suspend fun runPingPongs(pingContext: CoroutineContext, pongContext: CoroutineContext) {
-        val me = Channel<PingPongActorBenchmark.Letter>()
+        /*val me = Channel<PingPongActorBenchmark.Letter>()
         val pong = pongActorCoroutine(pongContext)
         val ping = pingActorCoroutine(pingContext, pong)
         ping.send(PingPongActorBenchmark.Letter(Start(), me))
 
-        me.receive()
+        me.receive()*/
     }
 }
